@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-//Authenticate checks if email and password matches.
+// Authenticate checks if email and password matches.
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var requestPayload struct {
 		Email    string `json:"email"`
@@ -39,9 +39,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log authentication
-
 	err = app.logRequest("authentication", fmt.Sprintf("%s logged in", user.Email))
-
 	if err != nil {
 		_ = app.errorJSON(w, err)
 		return
@@ -65,8 +63,10 @@ func (app *Config) logRequest(name, data string) error {
 	entry.Name = name
 	entry.Data = data
 
-	jsonData, _ := json.MarshalIndent(entry, "", "/t")
-	request, err := http.NewRequest("POST", "http://logger-service/log", bytes.NewBuffer(jsonData))
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+	logServiceURL := "http://logger-service/log"
+
+	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -76,5 +76,6 @@ func (app *Config) logRequest(name, data string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
